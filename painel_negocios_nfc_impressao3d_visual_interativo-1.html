@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>Painel de Negócios | NFC + Impressão 3D</title>
+<style>
+:root{--bg:#0b1020;--panel:#121b2d;--panel2:#172338;--text:#f4f7fb;--muted:#a9b6c9;--line:#293750;--blue:#70b7ff;--mint:#56e0b0;--gold:#ffd37b;--pink:#ff9dba;--radius:20px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 70% -15%,#203b61 0,transparent 38%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:1440px;margin:auto;min-height:100vh}
+.top{position:sticky;top:0;z-index:20;background:#0b1020eF;backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:14px clamp(14px,3vw,36px);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),var(--mint));color:#07111d;font-weight:900;font-size:19px}.brand small{display:block;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase}
+.top-actions{display:flex;gap:8px;align-items:center}.pillbtn,.navbtn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:12px}.pillbtn:hover,.navbtn:hover{border-color:var(--blue)}
+.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:24px;padding:24px clamp(14px,3vw,36px) 60px}
+.sidebar{position:sticky;top:91px;align-self:start;background:#111a2b;border:1px solid var(--line);border-radius:20px;padding:12px}
+.navbtn{width:100%;text-align:left;margin:3px 0;border-color:transparent;background:transparent;color:var(--muted);display:flex;gap:10px;align-items:center}.navbtn.active{background:#20314a;color:#fff;border-color:#385477}.navbtn span{width:24px;text-align:center}
+main{min-width:0}.hero{padding:28px 0 24px;display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:center}.eyebrow{color:var(--mint);font-weight:800;letter-spacing:1.5px;text-transform:uppercase;font-size:12px}.hero h1{font-size:clamp(32px,5vw,58px);line-height:1.03;letter-spacing:-1.8px;margin:10px 0 16px}.hero p{color:var(--muted);font-size:17px;max-width:680px}.gradient{background:linear-gradient(90deg,var(--blue),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-card{background:linear-gradient(145deg,#1c2e47,#111a2b);border:1px solid #30425e;border-radius:24px;padding:22px;box-shadow:0 20px 70px #0003}.hero-card .big{font-size:30px;font-weight:850;letter-spacing:-1px}.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.metric{background:#0e1727;border:1px solid var(--line);border-radius:15px;padding:12px}.metric strong{display:block;font-size:19px}.metric small{color:var(--muted);font-size:11px}
+.section{scroll-margin-top:92px;margin:26px 0 38px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:16px}.section h2{font-size:clamp(24px,3vw,35px);letter-spacing:-.7px;margin:4px 0}.section-head p{color:var(--muted);margin:0;max-width:650px}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:linear-gradient(155deg,#172338,#101827);border:1px solid var(--line);border-radius:var(--radius);padding:18px;min-width:0}.card h3{margin:0 0 8px;font-size:17px}.card p,.card li{color:var(--muted);font-size:14px}.card ul{padding-left:18px}.tag{display:inline-block;background:#23354d;color:var(--blue);font-size:11px;font-weight:800;letter-spacing:.5px;border-radius:999px;padding:5px 9px;margin-bottom:10px}.callout{border-left:3px solid var(--mint);padding:12px 15px;background:#142a2a;border-radius:0 12px 12px 0;color:#d9fff2;margin-top:14px}
+.visual-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.visual{background:linear-gradient(150deg,#172338,#0e1625);border:1px solid var(--line);border-radius:24px;padding:16px;overflow:hidden}.visual h3{margin:0 0 4px}.visual .sub{color:var(--muted);font-size:13px;margin:0 0 12px}.visual-stage{height:310px;border-radius:18px;background:radial-gradient(ellipse at 50% 60%,#273c57,#0b1220 70%);position:relative;display:grid;place-items:center;overflow:hidden}
+.printer-scene{width:245px;height:255px;position:relative;perspective:900px;display:grid;place-items:center}
+.printer{width:210px;height:220px;position:relative;transform-style:preserve-3d;animation:turn 12s linear infinite;transform:rotateY(0deg) rotateX(-4deg)}
+.printer:hover{animation-play-state:paused}
+@keyframes turn{from{transform:rotateY(0deg) rotateX(-4deg)}to{transform:rotateY(360deg) rotateX(-4deg)}}
+.frame{position:absolute;left:30px;top:17px;width:150px;height:174px;border:9px solid #aab8c8;border-bottom-width:12px;border-radius:8px;background:linear-gradient(135deg,#27364a99,#101a2b66);box-shadow:inset 0 0 0 2px #52647a,0 12px 18px #0006;transform:translateZ(8px)}
+.frame:before{content:"";position:absolute;left:8px;right:8px;top:10px;bottom:10px;border-left:3px solid #e2eaf5;border-right:3px solid #e2eaf5}
+.frame:after{content:"";position:absolute;left:-11px;right:-11px;bottom:-17px;height:10px;background:#62758c;border-radius:3px}
+.rail{position:absolute;left:26px;top:18px;width:8px;height:175px;background:linear-gradient(90deg,#52657d,#dce5ef,#6c7d91);border-radius:4px;transform:translateZ(16px)}
+.rail.r{left:176px;transform:translateZ(-3px)}
+.toprail{position:absolute;left:25px;top:14px;width:160px;height:9px;background:#d6e1ee;border-radius:5px;transform:translateZ(10px)}
+.bed{position:absolute;left:40px;top:160px;width:130px;height:13px;background:linear-gradient(#9cacc0,#42556d);transform:rotateX(60deg) translateZ(22px);border-radius:3px;box-shadow:0 15px 18px #0006}
+.base{position:absolute;left:13px;bottom:0;width:190px;height:38px;border-radius:7px;background:linear-gradient(140deg,#45566e,#151f30 65%);box-shadow:0 14px 20px #0008;transform:translateZ(4px)}
+.base:after{content:"FDM • 3D";position:absolute;right:10px;bottom:7px;color:#9fb2ca;font-size:8px;letter-spacing:1px}
+.spool{position:absolute;right:8px;top:55px;width:48px;height:48px;border:8px solid #f1a65e;border-radius:50%;background:#142034;box-shadow:inset 0 0 0 5px #b66c37;transform:translateZ(25px)}
+.spool:after{content:"";position:absolute;left:15px;top:14px;width:95px;height:3px;background:var(--mint);transform:rotate(35deg);transform-origin:left;box-shadow:0 0 8px var(--mint)}
+.head{position:absolute;left:83px;top:38px;width:52px;height:28px;background:linear-gradient(135deg,#e2eaf3,#64778e);border-radius:5px;transform:translateZ(25px);box-shadow:0 5px 9px #0008}
+.head:after{content:"";position:absolute;left:21px;bottom:-12px;width:10px;height:13px;background:#f0a55c;clip-path:polygon(20% 0,80% 0,50% 100%)}
+.nozzle{position:absolute;left:103px;top:67px;width:3px;height:3px;background:#ffd37b;border-radius:50%;box-shadow:0 0 10px #ffd37b;transform:translateZ(25px)}
+.turn-hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#91a3bb;font-size:11px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.controls button{border:1px solid var(--line);border-radius:10px;background:#1b2b41;color:var(--text);padding:8px 11px}.controls button.selected{border-color:var(--mint);color:var(--mint)}
+.print-stage{height:310px;border-radius:18px;background:radial-gradient(ellipse at 50% 60%,#273c57,#0b1220 70%);position:relative;overflow:hidden;display:grid;place-items:center}
+.print-bed{position:relative;width:240px;height:220px;perspective:600px}.print-bed:before{content:"";position:absolute;left:15px;right:15px;bottom:15px;height:72px;background:linear-gradient(135deg,#60738b,#26374e);transform:rotateX(60deg);border:2px solid #8496aa;border-radius:5px}
+.object{position:absolute;bottom:40px;left:50%;width:100px;height:0;transform:translateX(-50%);transition:height .3s ease;filter:drop-shadow(0 0 10px #56e0b055)}
+.object .layer{height:5px;border:1px solid #b5ffe7;background:linear-gradient(90deg,#1f997c,#56e0b0,#1d7f6a);margin-top:-1px;border-radius:2px;box-shadow:0 0 4px #56e0b044}
+.print-head{position:absolute;top:25px;left:calc(50% - 42px);width:84px;height:26px;border-radius:6px;background:linear-gradient(#d9e4ef,#697c91);transition:top .3s,left .3s;box-shadow:0 5px 15px #0008}
+.print-head:after{content:"";position:absolute;bottom:-12px;left:38px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:12px solid #ffbf74}
+.print-beam{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#91a6c3;opacity:.5}
+.progress{height:8px;background:#263750;border-radius:20px;overflow:hidden;margin:12px 0 6px}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--mint));transition:width .25s}
+.progress-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.molecule{width:100%;height:210px;display:block;background:radial-gradient(ellipse,#17283c,#0d1523);border-radius:16px}
+.atom{font-size:12px;font-weight:800;fill:#0b1020}.bond{stroke:#b4c4d7;stroke-width:4;stroke-linecap:round}.molecule-caption{font-size:12px;color:var(--muted);margin:8px 0 0}
+.machine-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.machine{border:1px solid var(--line);background:#111b2b;border-radius:18px;padding:15px}.machine .machine-art{height:130px;background:radial-gradient(ellipse,#273b55,#101827);border-radius:12px;display:grid;place-items:center;margin-bottom:12px;overflow:hidden}.mini-printer{position:relative;width:94px;height:100px;border:7px solid #aab8c8;border-bottom:11px solid #64758a;border-radius:5px;background:#142034;box-shadow:0 12px 18px #0005}.mini-printer:before{content:"";position:absolute;top:9px;left:10px;right:10px;height:5px;background:#d8e3ef}.mini-printer:after{content:"";position:absolute;bottom:12px;left:12px;right:12px;height:17px;background:linear-gradient(#56e0b0,#168d72);clip-path:polygon(50% 0,100% 100%,0 100%)}.machine h3{font-size:15px;margin:0 0 5px}.price{font-size:19px;font-weight:850;color:var(--mint)}.machine p{font-size:12px;color:var(--muted);margin:6px 0}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input,.field select{width:100%;background:#0c1422;border:1px solid #33445e;color:var(--text);border-radius:10px;padding:10px}.result{background:#0b1523;border:1px solid #30425d;border-radius:16px;padding:15px;margin-top:14px}.result strong{font-size:24px;color:var(--mint);display:block}.result small{color:var(--muted)}.result-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.note{font-size:12px;color:var(--muted)}
+details{border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:#111a2a;margin:8px 0}summary{cursor:pointer;font-weight:750}details p{color:var(--muted);font-size:14px}
+.footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:12px}.mobile-nav{display:none}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{display:flex;position:sticky;top:70px;overflow:auto;z-index:15;gap:4px;padding:7px;border-radius:14px}.navbtn{width:auto;white-space:nowrap;padding:9px 12px}.navbtn span{display:none}.hero{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.machine-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.top{padding:10px 12px}.brand{font-size:14px}.brand small{font-size:9px}.logo{width:36px;height:36px}.top-actions .pillbtn{padding:8px;font-size:12px}.layout{padding:12px 12px 40px;gap:12px}.hero{padding-top:18px}.hero h1{font-size:39px}.hero p{font-size:15px}.metric-row{grid-template-columns:repeat(3,1fr)}.metric{padding:9px}.metric strong{font-size:15px}.metric small{font-size:9px}.cards,.visual-grid,.two-col{grid-template-columns:1fr}.visual-stage,.print-stage{height:280px}.machine-list{grid-template-columns:1fr 1fr}.machine{padding:10px}.machine .machine-art{height:105px}.field-grid{grid-template-columns:1fr 1fr}.section-head{display:block}.section-head p{font-size:14px}.card{padding:15px}.visual{padding:12px}.printer-scene{transform:scale(.9)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="logo">N+</div><div>PAINEL DE NEGÓCIOS<small>NFC • impressão 3D</small></div></div>
+ <div class="top-actions"><button class="pillbtn" onclick="toggleRotate()" id="rotateBtn">⏸ Pausar rotação</button><button class="pillbtn" onclick="document.documentElement.requestFullscreen?.()">⛶ Tela cheia</button></div>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navegação">
+ <button class="navbtn active" data-target="inicio"><span>⌂</span> Visão geral</button>
+ <button class="navbtn" data-target="nfc"><span>⌁</span> Placas NFC</button>
+ <button class="navbtn" data-target="3d"><span>▧</span> Impressão 3D</button>
+ <button class="navbtn" data-target="materiais"><span>◉</span> Filamentos</button>
+ <button class="navbtn" data-target="calculadoras"><span>∑</span> Calculadoras</button>
+ <button class="navbtn" data-target="plano"><span>✓</span> Plano de ação</button>
+</nav>
+<main>
+<section class="hero" id="inicio">
+ <div><div class="eyebrow">Proposta para começar pequeno e crescer com dados</div><h1>Uma ideia.<br><span class="gradient">Dois caminhos.</span></h1><p>Um painel para entender os produtos, visualizar como a impressão 3D funciona e estimar os custos antes de investir dinheiro.</p></div>
+ <div class="hero-card"><div class="tag">OBJETIVO DO PROJETO</div><div class="big">Validar antes de escalar.</div><p style="color:var(--muted);margin-bottom:0">Testar a procura, registrar gastos e vendas e só aumentar o investimento quando os números fizerem sentido.</p><div class="metric-row"><div class="metric"><strong>01</strong><small>Testar o mercado</small></div><div class="metric"><strong>02</strong><small>Medir a margem</small></div><div class="metric"><strong>03</strong><small>Reinvestir com critério</small></div></div></div>
+</section>
+<section class="section" id="nfc">
+ <div class="section-head"><div><div class="eyebrow">Módulo 01</div><h2>Placas NFC personalizadas</h2><p>Uma aproximação do celular pode abrir um link configurado: avaliação, conversa, Wi-Fi ou pagamento.</p></div></div>
+ <div class="cards">
+  <article class="card"><div class="tag">GOOGLE</div><h3>⭐ Avaliações com menos atrito</h3><p>O cliente aproxima um celular compatível e abre a página de avaliação do estabelecimento. A placa não garante avaliações; ela facilita chegar até o link.</p><ul><li>Boa para balcões e recepções</li><li>Personalização de cor e identidade</li></ul></article>
+  <article class="card"><div class="tag">WHATSAPP</div><h3>☏ Conversa em um toque</h3><p>O NFC pode abrir o WhatsApp de uma empresa ou uma conversa com mensagem inicial pré-preenchida.</p><ul><li>Orçamentos e atendimento</li><li>Captação de contatos</li></ul></article>
+  <article class="card"><div class="tag">PIX</div><h3>◆ Pagamento acessível</h3><p>Pode abrir uma página ou link de pagamento configurado. O NFC não realiza nem confirma o pagamento sozinho.</p><ul><li>Caixas e balcões</li><li>Confira sempre o link antes de entregar</li></ul></article>
+ </div>
+ <div class="callout">A placa é a interface física; o conteúdo é um link gravado no chip. Para celulares sem NFC ou por preferência, vale incluir um QR Code como alternativa.</div>
+</section>
+<section class="section" id="3d">
+ <div class="section-head"><div><div class="eyebrow">Módulo 02 • laboratório visual</div><h2>Impressão 3D: veja a máquina</h2><p>Esta é uma ilustração interativa simplificada de uma impressora FDM de mesa, não um modelo técnico de uma marca específica.</p></div></div>
+ <div class="visual-grid">
+  <article class="visual"><h3>Uma impressora por todos os lados</h3><p class="sub">O modelo gira automaticamente. Toque em pausar para inspecionar.</p>
+   <div class="visual-stage"><div class="printer-scene"><div class="printer" id="printer"><div class="frame"></div><div class="rail"></div><div class="rail r"></div><div class="toprail"></div><div class="bed"></div><div class="base"></div><div class="spool"></div><div class="head"></div><div class="nozzle"></div></div></div><div class="turn-hint">VISTA ILUSTRATIVA • GIRE PARA EXPLORAR</div></div>
+   <div class="controls"><button class="selected" onclick="setAngle(0)">Frente</button><button onclick="setAngle(55)">Lado</button><button onclick="setAngle(145)">Traseira</button><button onclick="setAngle(245)">Outro lado</button></div>
+   <p class="note">O rolo alimenta o filamento; a cabeça aquece e deposita o material em camadas sobre a mesa.</p>
+  </article>
+  <article class="visual"><h3>Veja uma peça sendo construída</h3><p class="sub">Aperte “Iniciar” e acompanhe as camadas subindo.</p>
+   <div class="print-stage"><div class="print-bed"><div class="print-beam"></div><div class="print-head" id="printHead"></div><div class="object" id="object"></div></div></div>
+   <div class="progress"><span id="progressBar"></span></div><div class="progress-meta"><span id="progressText">Pronta para iniciar</span><span id="percent">0%</span></div>
+   <div class="controls"><button class="selected" onclick="startPrint()">▶ Iniciar impressão</button><button onclick="resetPrint()">↺ Reiniciar</button><button onclick="stepPrint()">+ Próxima camada</button></div>
+   <p class="note">Animação didática: a impressora real move os eixos e deposita filamento derretido camada por camada. Uma peça pode levar de minutos a muitas horas.</p>
+  </article>
+ </div>
+ <div class="section-head" style="margin-top:22px"><div><h2>Exemplos de impressoras para pesquisar</h2><p>Valores abaixo são faixas aproximadas de planejamento, não cotação em tempo real. Confirme preço, garantia, disponibilidade e peças antes de comprar.</p></div></div>
+ <div class="machine-list">
+  <article class="machine"><div class="machine-art"><div class="mini-printer"></div></div><h3>Creality Ender 3 V3 SE</h3><div class="price">~ R$ 1.400–1.900</div><p>Entrada econômica. Pode exigir mais ajustes e aprendizado dependendo do uso.</p><span class="tag">INÍCIO COM ORÇAMENTO MENOR</span></article>
+  <article class="machine"><div class="machine-art"><div class="mini-printer" style="border-color:#b8c5d6;border-bottom-color:#61768f;width:88px;height:94px"></div></div><h3>Bambu Lab A1 Mini</h3><div class="price">~ R$ 1.950–2.500</div><p>Compacta e voltada a facilitar a experiência de impressão de mesa.</p><span class="tag">COMPACTA</span></article>
+  <article class="machine"><div class="machine-art"><div class="mini-printer" style="width:105px;height:108px"></div></div><h3>Bambu Lab A1</h3><div class="price">~ R$ 2.700–4.000</div><p>Área de impressão maior que a A1 Mini; compare pacote, acessórios e preço local.</p><span class="tag">MAIS ESPAÇO</span></article>
+ </div>
+ <div class="callout">Não é necessário começar com 5 ou 10 impressoras. Uma máquina permite aprender, medir o tempo real das peças, descobrir os produtos mais vendidos e calcular o custo de falhas e manutenção.</div>
+</section>
+<section class="section" id="materiais">
+ <div class="section-head"><div><div class="eyebrow">Material e química</div><h2>O que é o filamento?</h2><p>É um fio plástico enrolado em um carretel. A máquina puxa o fio, aquece-o e deposita pequenas linhas que se unem para formar a peça.</p></div></div>
+ <div class="visual-grid">
+  <article class="visual"><h3>PLA: estrutura molecular simplificada</h3><p class="sub">PLA significa ácido polilático. O desenho abaixo representa esquematicamente unidades repetidas da cadeia.</p>
+   <svg class="molecule" viewBox="0 0 420 210" role="img" aria-label="Diagrama esquemático de unidades repetidas da molécula de PLA">
+    <defs><linearGradient id="mol" x1="0" x2="1"><stop stop-color="#70b7ff"/><stop offset="1" stop-color="#56e0b0"/></linearGradient></defs>
+    <g class="bond" fill="none"><path d="M36 100 L72 100 L96 72 L128 72 L152 100 L186 100 L210 72 L242 72 L266 100 L300 100 L324 72 L356 72 L382 100"/></g>
+    <g fill="url(#mol)"><circle cx="36" cy="100" r="17"/><circle cx="72" cy="100" r="17"/><circle cx="96" cy="72" r="17"/><circle cx="128" cy="72" r="17"/><circle cx="152" cy="100" r="17"/><circle cx="186" cy="100" r="17"/><circle cx="210" cy="72" r="17"/><circle cx="242" cy="72" r="17"/><circle cx="266" cy="100" r="17"/><circle cx="300" cy="100" r="17"/><circle cx="324" cy="72" r="17"/><circle cx="356" cy="72" r="17"/><circle cx="382" cy="100" r="17"/></g>
+    <g class="atom" text-anchor="middle"><text x="36" y="104">O</text><text x="72" y="104">C</text><text x="96" y="76">O</text><text x="128" y="76">C</text><text x="152" y="104">O</text><text x="186" y="104">C</text><text x="210" y="76">O</text><text x="242" y="76">C</text><text x="266" y="104">O</text><text x="300" y="104">C</text><text x="324" y="76">O</text><text x="356" y="76">C</text><text x="382" y="104">O</text></g>
+    <path d="M25 143 H394" stroke="#526984" stroke-width="1.5" stroke-dasharray="5 5"/><text x="210" y="166" fill="#a9b6c9" font-size="12" text-anchor="middle">cadeia polimérica • representação ilustrativa</text><text x="210" y="187" fill="#56e0b0" font-size="11" font-weight="700" text-anchor="middle">Unidade repetida aproximada: [–O–CH(CH₃)–C(=O)–]ₙ</text>
+   </svg>
+   <p class="molecule-caption">A fórmula foi simplificada para fins educativos; não é uma visualização atômica em escala.</p>
+  </article>
+  <article class="visual"><h3>Do carretel até o objeto</h3><p class="sub">A cor e o tipo de filamento mudam o visual e as propriedades da peça.</p>
+   <div class="cards" style="grid-template-columns:1fr 1fr">
+    <div class="card"><div class="tag">PLA / PLA+</div><h3>Fácil para começar</h3><p>Comum em objetos decorativos, suportes e protótipos. Sensível a calor elevado.</p></div>
+    <div class="card"><div class="tag">PETG</div><h3>Mais resistência ao uso</h3><p>Boa opção para certas peças funcionais; pode exigir ajuste de retração e temperatura.</p></div>
+    <div class="card"><div class="tag">ABS / ASA</div><h3>Uso mais exigente</h3><p>Exige mais controle térmico e ventilação adequada; não é a primeira escolha para todo iniciante.</p></div>
+    <div class="card"><div class="tag">TPU</div><h3>Flexível</h3><p>Usado em peças flexíveis. A impressão pode ser mais lenta e requer compatibilidade da máquina.</p></div>
+   </div>
+  </article>
+ </div>
+ <div class="cards" style="margin-top:14px">
+  <article class="card"><h3>Quanto custa o filamento?</h3><p>Como referência de orçamento, um rolo de 1 kg de PLA pode ficar aproximadamente entre <b>R$ 70 e R$ 130</b>, dependendo da marca, qualidade, cor, frete e promoção.</p></article>
+  <article class="card"><h3>Posso reaproveitar a purga?</h3><p>A purga é o material expelido para limpar ou trocar cor. Pode haver usos limitados em peças de teste ou enchimentos, mas não vira filamento novo automaticamente. Reciclar exige equipamento específico, como triturador e extrusora.</p></article>
+  <article class="card"><h3>Por que usar lubrificante?</h3><p>Alguns pontos da impressora precisam de manutenção. Use somente o lubrificante indicado pelo fabricante e nos locais descritos no manual; vaselina não é lubrificante universal.</p></article>
+ </div>
+</section>
+<section class="section" id="calculadoras">
+ <div class="section-head"><div><div class="eyebrow">Números antes de investir</div><h2>Calculadoras rápidas</h2><p>Altere os campos para estimar custos. Os resultados são simulações: confirme com os seus preços e medições reais.</p></div></div>
+ <div class="two-col">
+  <article class="card"><div class="tag">IMPRESSÃO 3D</div><h3>Custo aproximado por peça</h3>
+   <div class="field-grid">
+    <div class="field"><label>Preço do rolo de 1 kg (R$)</label><input id="filPrice" type="number" value="90" min="0"></div>
+    <div class="field"><label>Filamento usado (g)</label><input id="grams" type="number" value="80" min="1"></div>
+    <div class="field"><label>Tempo de impressão (h)</label><input id="hours" type="number" value="3" min="0"></div>
+    <div class="field"><label>Consumo médio (W)</label><input id="watts" type="number" value="120" min="0"></div>
+    <div class="field"><label>Tarifa elétrica (R$/kWh)</label><input id="tariff" type="number" value="1.00" min="0" step=".01"></div>
+    <div class="field"><label>Desperdício (%)</label><input id="waste" type="number" value="8" min="0" max="100"></div>
+    <div class="field"><label>Mão de obra por peça (R$)</label><input id="labor" type="number" value="5" min="0" step=".5"></div>
+    <div class="field"><label>Preço de venda (R$)</label><input id="sale" type="number" value="35" min="0" step=".5"></div>
+   </div>
+   <div class="result"><small>Custo estimado por unidade</small><strong id="unitCost">R$ 0,00</strong><div class="result-row"><div><small>Lucro estimado antes de taxas</small><b id="unitProfit">R$ 0,00</b></div><div><small>Margem aproximada</small><b id="unitMargin">0%</b></div></div></div>
+   <p class="note">Não inclui automaticamente taxas de marketplace, embalagem, frete subsidiado, imposto, depreciação, manutenção nem tempo de atendimento.</p>
+  </article>
+  <article class="card"><div class="tag">INVESTIMENTO</div><h3>Simular começo com impressoras</h3>
+   <div class="field-grid">
+    <div class="field"><label>Quantidade de impressoras</label><input id="machines" type="number" value="1" min="1" max="10"></div>
+    <div class="field"><label>Preço de cada impressora (R$)</label><input id="machinePrice" type="number" value="2300" min="0"></div>
+    <div class="field"><label>Filamento inicial (rolos)</label><input id="spools" type="number" value="3" min="0"></div>
+    <div class="field"><label>Preço por rolo (R$)</label><input id="spoolPrice" type="number" value="90" min="0"></div>
+    <div class="field"><label>Ferramentas e acabamento (R$)</label><input id="tools" type="number" value="250" min="0"></div>
+    <div class="field"><label>Reserva para imprevistos (%)</label><input id="reserve" type="number" value="10" min="0" max="100"></div>
+   </div>
+   <div class="result"><small>Investimento inicial estimado</small><strong id="startup">R$ 0,00</strong><div class="result-row"><div><small>Máquinas</small><b id="machineTotal">R$ 0,00</b></div><div><small>Materiais e ferramentas</small><b id="supplyTotal">R$ 0,00</b></div></div></div>
+   <p class="note">Não inclui computador se você ainda não tiver um, frete, eventual gabinete/ventilação, taxas ou capital de giro para operar.</p>
+  </article>
+  <article class="card"><div class="tag">PLACAS NFC</div><h3>Simular um pequeno lote</h3>
+   <div class="field-grid">
+    <div class="field"><label>Quantidade comprada</label><select id="nfcQty"><option value="5">5 placas</option><option value="10" selected>10 placas</option><option value="20">20 placas</option><option value="50">50 placas</option><option value="100">100 placas</option></select></div>
+    <div class="field"><label>Custo total do lote (R$)</label><input id="nfcCost" type="number" value="350" min="0"></div>
+    <div class="field"><label>Preço da primeira placa (R$)</label><input id="nfcOne" type="number" value="80" min="0"></div>
+    <div class="field"><label>Preço do pacote com 2 (R$)</label><input id="nfcPair" type="number" value="150" min="0"></div>
+    <div class="field"><label>Unidades vendidas</label><input id="nfcSold" type="number" value="5" min="0"></div>
+    <div class="field"><label>Outros custos totais (R$)</label><input id="nfcExtra" type="number" value="40" min="0"></div>
+   </div>
+   <div class="result"><small>Custo de compra por placa</small><strong id="nfcUnit">R$ 0,00</strong><div class="result-row"><div><small>Receita simulada*</small><b id="nfcRevenue">R$ 0,00</b></div><div><small>Saldo após custos</small><b id="nfcProfit">R$ 0,00</b></div></div></div>
+   <p class="note">*Para a simulação, assume-se que as vendas são em pares de R$ 150 e, se houver uma unidade restante, ela é vendida por R$ 80. O preço do fornecedor deve ser confirmado.</p>
+  </article>
+  <article class="card"><div class="tag">COMPARAÇÃO</div><h3>Como decidir o primeiro passo</h3><p>Não compare apenas o valor de venda. Compare o investimento necessário, a margem depois de todos os custos, o tempo para produzir ou configurar, a procura e o risco de estoque parado.</p><div class="callout">Uma boa primeira meta é validar um pequeno lote de NFC ou alguns produtos impressos e registrar as vendas antes de comprar equipamentos adicionais.</div></article>
+ </div>
+</section>
+<section class="section" id="plano">
+ <div class="section-head"><div><div class="eyebrow">Próximas etapas</div><h2>Plano de ação sugerido</h2><p>Uma forma responsável de apresentar o pedido de capital e acompanhar o resultado.</p></div></div>
+ <div class="cards">
+  <article class="card"><div class="tag">ETAPA 1</div><h3>Escolher o teste inicial</h3><p>Definir se o primeiro teste será NFC, impressão 3D ou um teste bem pequeno de cada. Evitar investir pesado nos dois ao mesmo tempo.</p></article>
+  <article class="card"><div class="tag">ETAPA 2</div><h3>Validar clientes</h3><p>Conversar com pequenos comércios, autônomos e possíveis compradores. Mostrar amostras, recolher interesse e tentar pedidos reais.</p></article>
+  <article class="card"><div class="tag">ETAPA 3</div><h3>Registrar tudo</h3><p>Guardar comprovantes e planilhar compras, vendas, taxas, frete, falhas, horas de trabalho e lucro. Separar o dinheiro do negócio do dinheiro pessoal.</p></article>
+  <article class="card"><div class="tag">ETAPA 4</div><h3>Revisar antes de expandir</h3><p>Depois de um período combinado, apresentar resultados à família e decidir com números se vale repor estoque, comprar equipamento ou mudar de produto.</p></article>
+  <article class="card"><div class="tag">RISCOS</div><h3>Não prometer lucro garantido</h3><p>Podem existir vendas lentas, defeitos, manutenção, concorrência, taxas e capital parado. A reserva e os testes pequenos ajudam a limitar perdas.</p></article>
+  <article class="card"><div class="tag">COMBINADO</div><h3>Definir as condições do apoio</h3><p>Antes de receber o capital, combinar se é empréstimo, investimento ou ajuda, qual é o limite de gastos e quando os resultados serão apresentados.</p></article>
+ </div>
+ <div class="section-head" style="margin-top:24px"><div><h2>Perguntas frequentes</h2></div></div>
+ <details><summary>O celular precisa ter NFC?</summary><p>Para ler a placa diretamente, sim, o aparelho precisa de NFC ativado e compatível. Um QR Code impresso é uma alternativa para quem não tem NFC ou prefere a câmera.</p></details>
+ <details><summary>A impressora 3D imprime qualquer coisa?</summary><p>Não. O tamanho é limitado pela área de impressão, cada material tem requisitos próprios e alguns objetos precisam de suportes, montagem ou acabamento. Também é preciso respeitar os direitos de uso dos modelos digitais e marcas.</p></details>
+ <details><summary>Energia é o maior custo da impressão 3D?</summary><p>Em muitas impressoras de mesa, o consumo elétrico por peça pode ser menor que o custo do filamento e do tempo de trabalho, mas varia conforme máquina, temperatura, duração e tarifa local. Use medições reais para decidir.</p></details>
+ <details><summary>Quando faz sentido comprar mais máquinas?</summary><p>Quando a máquina atual estiver com utilização consistente, houver pedidos suficientes, o tempo de produção estiver limitando as vendas e a margem real pagar a expansão sem comprometer o caixa.</p></details>
+ <div class="footer">Painel educativo de planejamento • Valores ilustrativos para simulação • Confirme preços, especificações, impostos e custos reais antes de investir.</div>
+</section>
+</main>
+</div>
+</div>
+<script>
+const money = n => (Number.isFinite(n)?n:0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const val = id => Math.max(0, Number(document.getElementById(id).value)||0);
+document.querySelectorAll('.navbtn').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+ document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+}));
+const printer=document.getElementById('printer');let rotating=true;function toggleRotate(){rotating=!rotating;printer.style.animationPlayState=rotating?'running':'paused';document.getElementById('rotateBtn').textContent=rotating?'⏸ Pausar rotação':'▶ Retomar rotação'}
+function setAngle(deg){rotating=false;printer.style.animation='none';printer.style.transform=`rotateY(${deg}deg) rotateX(-4deg)`;document.getElementById('rotateBtn').textContent='▶ Retomar rotação';document.querySelectorAll('.controls button').forEach(b=>b.classList.remove('selected'));event?.currentTarget?.classList.add('selected')}
+let printTimer=null,layerCount=0,totalLayers=28;
+function renderPrint(){const obj=document.getElementById('object');obj.innerHTML='';for(let i=0;i<layerCount;i++){let layer=document.createElement('div');layer.className='layer';obj.appendChild(layer)}obj.style.height=(layerCount*5)+'px';document.getElementById('progressBar').style.width=(layerCount/totalLayers*100)+'%';document.getElementById('percent').textContent=Math.round(layerCount/totalLayers*100)+'%';document.getElementById('progressText').textContent=layerCount===totalLayers?'Peça concluída!':layerCount===0?'Pronta para iniciar':`Imprimindo camada ${layerCount} de ${totalLayers}`;document.getElementById('printHead').style.top=(25+layerCount*2.4)+'px';document.getElementById('printHead').style.left=`calc(50% - ${42+(layerCount%2?12:-12)}px)`}
+function stepPrint(){if(layerCount<totalLayers)layerCount++;renderPrint()}
+function startPrint(){if(printTimer)return;if(layerCount>=totalLayers)layerCount=0;printTimer=setInterval(()=>{if(layerCount>=totalLayers){clearInterval(printTimer);printTimer=null;renderPrint();return}stepPrint()},240)}
+function resetPrint(){if(printTimer){clearInterval(printTimer);printTimer=null}layerCount=0;renderPrint()}
+const ids=['filPrice','grams','hours','watts','tariff','waste','labor','sale','machines','machinePrice','spools','spoolPrice','tools','reserve','nfcQty','nfcCost','nfcOne','nfcPair','nfcSold','nfcExtra'];
+function calc3d(){let grams=val('grams'),raw=val('filPrice')*grams/1000,mat=raw*(1+Math.min(100,val('waste'))/100),energy=val('hours')*val('watts')/1000*val('tariff'),cost=mat+energy+val('labor'),sale=val('sale'),profit=sale-cost;document.getElementById('unitCost').textContent=money(cost);document.getElementById('unitProfit').textContent=money(profit);document.getElementById('unitMargin').textContent=(sale>0?(profit/sale*100):0).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'}
+function calcStart(){let machines=Math.min(10,Math.max(1,val('machines'))),mt=machines*val('machinePrice'),st=val('spools')*val('spoolPrice')+val('tools'),subtotal=mt+st,total=subtotal*(1+Math.min(100,val('reserve'))/100);document.getElementById('machineTotal').textContent=money(mt);document.getElementById('supplyTotal').textContent=money(st);document.getElementById('startup').textContent=money(total)}
+function calcNfc(){let q=val('nfcQty'),unit=val('nfcCost')/Math.max(1,q),sold=Math.min(q,val('nfcSold')),pairs=Math.floor(sold/2),remainder=sold%2,rev=pairs*val('nfcPair')+remainder*val('nfcOne'),profit=rev-(unit*sold)-val('nfcExtra');document.getElementById('nfcUnit').textContent=money(unit);document.getElementById('nfcRevenue').textContent=money(rev);document.getElementById('nfcProfit').textContent=money(profit)}
+function calcAll(){calc3d();calcStart();calcNfc()}
+ids.forEach(id=>document.getElementById(id).addEventListener('input',calcAll));calcAll();renderPrint();
+</script>
+</body>
+</html>
